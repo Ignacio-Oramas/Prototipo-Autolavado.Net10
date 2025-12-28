@@ -50,9 +50,9 @@ namespace autolavado.Controllers
         // GET: WashingOrders/Create
         public IActionResult Create()
         {
-            ViewData["EmployeeId"] = new SelectList(_context.Empleados, "Id", "Id");
-            ViewData["ServiceId"] = new SelectList(_context.Services, "Id", "Id");
-            ViewData["VehicleId"] = new SelectList(_context.Vehicles, "Id", "Id");
+            ViewData["EmployeeId"] = new SelectList(_context.Empleados, "Id", "Nombre");
+            ViewData["ServiceId"] = new SelectList(_context.Services, "Id", "Nombre");
+            ViewData["VehicleId"] = new SelectList(_context.Vehicles, "Id", "Placa");
             return View();
         }
 
@@ -61,17 +61,30 @@ namespace autolavado.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,VehicleId,ServiceId,EmployeeId,Fecha,Estado,Total")] WashingOrder washingOrder)
+        public async Task<IActionResult> Create([Bind("VehicleId,ServiceId,EmployeeId")] WashingOrder washingOrder)
         {
+            ModelState.Remove("Estado");
+            ModelState.Remove("Fecha");
+            ModelState.Remove("Total");
+            
             if (ModelState.IsValid)
             {
+                washingOrder.Fecha = DateTime.Now;
+                washingOrder.Estado = WashingState.Pendiente;
+                
+                var service = await _context.Services.FindAsync(washingOrder.ServiceId);
+                if (service != null)
+                {
+                    washingOrder.Total = service.Precio;
+                }
+
                 _context.Add(washingOrder);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["EmployeeId"] = new SelectList(_context.Empleados, "Id", "Id", washingOrder.EmployeeId);
-            ViewData["ServiceId"] = new SelectList(_context.Services, "Id", "Id", washingOrder.ServiceId);
-            ViewData["VehicleId"] = new SelectList(_context.Vehicles, "Id", "Id", washingOrder.VehicleId);
+            ViewData["EmployeeId"] = new SelectList(_context.Empleados, "Id", "Nombre", washingOrder.EmployeeId);
+            ViewData["ServiceId"] = new SelectList(_context.Services, "Id", "Nombre", washingOrder.ServiceId);
+            ViewData["VehicleId"] = new SelectList(_context.Vehicles, "Id", "Placa", washingOrder.VehicleId);
             return View(washingOrder);
         }
 
@@ -165,6 +178,29 @@ namespace autolavado.Controllers
             }
 
             await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Completar(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var washingOrder = await _context.WashingOrders.FindAsync(id);
+            if (washingOrder == null)
+            {
+                return NotFound();
+            }
+
+            if (washingOrder.Estado == WashingState.Pendiente)
+            {
+                washingOrder.Estado = WashingState.Terminado;
+                _context.Update(washingOrder);
+                await _context.SaveChangesAsync();
+            }
+
             return RedirectToAction(nameof(Index));
         }
 

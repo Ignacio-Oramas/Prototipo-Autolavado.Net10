@@ -48,7 +48,7 @@ namespace autolavado.Controllers
         // GET: Vehicles/Create
         public IActionResult Create()
         {
-            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "Id");
+            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "Nombre");
             return View();
         }
 
@@ -65,7 +65,7 @@ namespace autolavado.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "Id", vehicle.ClientId);
+            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "Nombre", vehicle.ClientId);
             return View(vehicle);
         }
 
@@ -82,7 +82,7 @@ namespace autolavado.Controllers
             {
                 return NotFound();
             }
-            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "Id", vehicle.ClientId);
+            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "Nombre", vehicle.ClientId);
             return View(vehicle);
         }
 
@@ -118,7 +118,7 @@ namespace autolavado.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "Id", vehicle.ClientId);
+            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "Nombre", vehicle.ClientId);
             return View(vehicle);
         }
 
