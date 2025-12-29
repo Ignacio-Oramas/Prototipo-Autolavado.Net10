@@ -13,8 +13,22 @@
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="VehicleId" class="control-label"></label>
-                <select asp-for="VehicleId" class ="form-control" asp-items="ViewBag.VehicleId"></select>
+                <label>Buscar Cliente (Nombre)</label>
+                <input list="clientesList" id="clienteBuscador" class="form-control" placeholder="Escribe para buscar...">
+                <datalist id="clientesList">
+                    @foreach (var cliente in (SelectList)ViewData["ClientId"])
+                    {
+                        <option data-value="@cliente.Value" value="@cliente.Text"></option>
+                    }
+                </datalist>
+                <input type="hidden" asp-for="ClientId" id="ClientIdHidden">
+            </div>
+
+            <div class="form-group">
+                <label>Vehículo (Placa)</label>
+                <select asp-for="VehicleId" id="VehicleSelect" class="form-control">
+                    <option value="">-- Seleccione un cliente primero --</option>
+                </select>
             </div>
             <div class="form-group">
                 <label asp-for="ServiceId" class="control-label"></label>
@@ -23,21 +37,6 @@
             <div class="form-group">
                 <label asp-for="EmployeeId" class="control-label"></label>
                 <select asp-for="EmployeeId" class ="form-control" asp-items="ViewBag.EmployeeId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="Fecha" class="control-label"></label>
-                <input asp-for="Fecha" class="form-control" />
-                <span asp-validation-for="Fecha" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Estado" class="control-label"></label>
-                <select asp-for="Estado" class="form-control"></select>
-                <span asp-validation-for="Estado" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Total" class="control-label"></label>
-                <input asp-for="Total" class="form-control" />
-                <span asp-validation-for="Total" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
@@ -52,4 +51,26 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $('#clienteBuscador').on('input', function() {
+            var val = $(this).val();
+            // Find the option in the datalist that matches the input value
+            // Note: This relies on the value being unique enough or just taking the first match
+            var id = $('#clientesList option[value="' + val + '"]').data('value');
+            $('#ClientIdHidden').val(id);
+
+            if(id) {
+                // Llamada AJAX para obtener los vehículos de ese cliente
+                $.getJSON('/WashingOrders/GetVehiclesByClient?clientId=' + id, function(data) {
+                    var items = '<option value="">-- Seleccione Placa --</option>';
+                    $.each(data, function(i, vehicle) {
+                        items += "<option value='" + vehicle.id + "'>" + vehicle.placa + "</option>";
+                    });
+                    $('#VehicleSelect').html(items);
+                });
+            } else {
+                $('#VehicleSelect').html('<option value="">-- Seleccione un cliente primero --</option>');
+            }
+        });
+    </script>
 }

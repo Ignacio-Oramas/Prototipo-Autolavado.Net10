@@ -15,6 +15,8 @@ namespace mvcrud.Models
         public int VehicleId { get; set; }
         public Vehicle? Vehicle { get; set; }
 
+        public int? ClientId { get; set; }
+
         // Foreign Key for Service
         public int ServiceId { get; set; }
         public Service? Service { get; set; }

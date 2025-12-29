@@ -180,5 +180,20 @@ En esta sesión, se realizaron una serie de mejoras y correcciones en los módul
 *   **`VehiclesController.cs`:** Siguiendo la nueva convención, se actualizaron los métodos `Create` y `Edit` para que el `SelectList` de clientes muestre `Client.Nombre` en lugar de `Client.Id`.
 *   **`Views/Vehicles/Index.cshtml`:** Se actualizó la tabla para mostrar `Client.Nombre` en lugar de `Client.Id` y se mejoró el estilo de los botones de acción.
 
+## Resumen de la sesión (29 de diciembre de 2025)
+
+### 1. Funcionalidad de Búsqueda de Clientes en Órdenes de Lavado
+*   **Objetivo:** Facilitar la creación de órdenes de lavado permitiendo buscar clientes por nombre y filtrar automáticamente sus vehículos asociados.
+*   **Modelado:** Se añadió la propiedad `ClientId` al modelo `WashingOrder` para facilitar la gestión del cliente seleccionado en la interfaz.
+*   **Implementación en Backend (`WashingOrdersController.cs`):**
+    *   Método `Create` (GET): Se añadió `ViewData["ClientId"]` con la lista de clientes.
+    *   Método `Create` (POST): Se actualizó para recibir `ClientId` y manejar correctamente la re-población de `SelectList` en caso de error de validación. Se automatizó el cálculo del `Total` y la asignación de `Fecha` y `Estado`.
+    *   Nuevo endpoint API `GetVehiclesByClient(int clientId)`: Retorna un JSON con los vehículos (`id`, `placa`) filtrados.
+*   **Implementación en Frontend (`Views/WashingOrders/Create.cshtml`):**
+    *   Se reemplazó el `Select` simple de vehículos por un buscador de clientes y un selector de vehículos dependiente.
+    *   Se integró lógica JavaScript para la actualización dinámica de vehículos vía AJAX.
+*   **Base de Datos:**
+    *   Se creó y aplicó la migración `AddClientIdToWashingOrder` para reflejar el cambio en el modelo `WashingOrder` en la base de datos, resolviendo un error de `SqlException`.
+
 ---
 *Archivo actualizado automáticamente por Gemini CLI.*

@@ -50,6 +50,7 @@ namespace autolavado.Controllers
         // GET: WashingOrders/Create
         public IActionResult Create()
         {
+            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "Nombre");
             ViewData["EmployeeId"] = new SelectList(_context.Empleados, "Id", "Nombre");
             ViewData["ServiceId"] = new SelectList(_context.Services, "Id", "Nombre");
             ViewData["VehicleId"] = new SelectList(_context.Vehicles, "Id", "Placa");
@@ -61,7 +62,7 @@ namespace autolavado.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("VehicleId,ServiceId,EmployeeId")] WashingOrder washingOrder)
+        public async Task<IActionResult> Create([Bind("VehicleId,ServiceId,EmployeeId,ClientId")] WashingOrder washingOrder)
         {
             ModelState.Remove("Estado");
             ModelState.Remove("Fecha");
@@ -82,6 +83,7 @@ namespace autolavado.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["ClientId"] = new SelectList(_context.Clients, "Id", "Nombre", washingOrder.ClientId);
             ViewData["EmployeeId"] = new SelectList(_context.Empleados, "Id", "Nombre", washingOrder.EmployeeId);
             ViewData["ServiceId"] = new SelectList(_context.Services, "Id", "Nombre", washingOrder.ServiceId);
             ViewData["VehicleId"] = new SelectList(_context.Vehicles, "Id", "Placa", washingOrder.VehicleId);
@@ -202,6 +204,16 @@ namespace autolavado.Controllers
             }
 
             return RedirectToAction(nameof(Index));
+        }
+        //? Endpoint obtener vehiculos por id cliente
+        [HttpGet]
+        public async Task<JsonResult> GetVehiclesByClient(int clientId)
+        {
+            var vehicles = await _context.Vehicles
+                .Where(v => v.ClientId == clientId)
+                .Select(v => new { id = v.Id, placa = v.Placa })
+                .ToListAsync();
+            return Json(vehicles);
         }
 
         private bool WashingOrderExists(int id)
