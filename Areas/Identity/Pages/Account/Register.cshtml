@@ -1,0 +1,47 @@
+@page
+@model RegisterModel
+@{
+    ViewData["Title"] = "Registrarse";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm mt-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fa-solid fa-user-plus"></i> @ViewData["Title"]</h5>
+            </div>
+            <div class="card-body">
+                <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                    <h5 class="card-title text-center mb-4">Crear una nueva cuenta</h5>
+                    <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                    
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="nombre@ejemplo.com" />
+                        <label asp-for="Input.Email"><i class="fa-solid fa-envelope"></i> Correo Electrónico</label>
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="contraseña" />
+                        <label asp-for="Input.Password"><i class="fa-solid fa-lock"></i> Contraseña</label>
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="form-floating mb-3">
+                        <input asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="contraseña" />
+                        <label asp-for="Input.ConfirmPassword"><i class="fa-solid fa-lock"></i> Confirmar Contraseña</label>
+                        <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                    </div>
+                    
+                    <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-success">
+                        <i class="fa-solid fa-check"></i> Registrarse
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
