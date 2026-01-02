@@ -282,5 +282,9 @@ En esta sesión, se realizaron una serie de mejoras y correcciones en los módul
     *   Implementar controles de navegación con estilos de Bootstrap (`< Anterior | 1 | 2 | 3 | Siguiente >`).
 *   **Calidad:** Se verificó la compilación exitosa del proyecto tras los cambios.
 
+### 2. Personalización de Inicio y Navegación
+*   **Vista de Inicio:** Se actualizó `Views/Home/Index.cshtml` con el título del sistema y la autoría.
+*   **Layout:** Se eliminó el enlace redundante "Dashboard" del menú de navegación principal para simplificar la interfaz.
+
 ---
 *Archivo actualizado automáticamente por Gemini CLI.*
